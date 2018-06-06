@@ -17,50 +17,42 @@
  *
  */
 
-#ifndef SLAM_VIEWER_MAP_H
-#define SLAM_VIEWER_MAP_H
+#ifndef SLAM_VIEWER_GROUNDDETECTOR_H
+#define SLAM_VIEWER_GROUNDDETECTOR_H
 
-#include <set>
+#include <vector>
 #include <mutex>
+#include <Eigen/Dense>
+#include <opencv2/core/core.hpp>
+#include "Map.h"
 #include "MapPoint.h"
-#include "KeyFrame.h"
 
 namespace SLAM_VIEWER {
 
-class MapPoint;
-class KeyFrame;
-
-class Map {
+class GroundDetector {
  public:
-    Map();
+    GroundDetector(Map * map);
 
-    std::vector<KeyFrame*> GetAllKeyFrames();
-    std::vector<MapPoint*> GetAllMapPoints();
-
-    // Get KeyFrame by id
-    KeyFrame* GetKeyFrame(int id);
-
-    // Add KeyFrames and MapPoints
-    void AddKeyFrame(KeyFrame* kf);
-    void AddMapPoint(MapPoint* mp);
-
-    // Remove KeyFrames and MapPoints
-    void EraseMapPoint(MapPoint* mp);
-    void EraseKeyFrame(KeyFrame* kf);
-
-    // Update connected KeyFrames
-    void UpdateConnections();
-
-    // Clear saved data
-    void clear();
+    // Get calculated plane
+    cv::Mat GetPlane();
 
  private:
-    std::set<MapPoint*> mapPoints_;
-    std::set<KeyFrame*> keyFrames_;
+    // Detect main plane from list of 3D Point
+    void DetectPlane(const std::vector<MapPoint*>& points, int iterations);
 
-    std::mutex mutexMap_;
+    // Compute plane with selected points
+    void ComputePlane(const std::vector<MapPoint *>& points);
+
+    Map * map_;
+    cv::Mat pwt_;   // Transformation from world to plane
+
+    std::mutex mutexPlane_;
+
+
+ public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 }  // namespace SLAM_VIEWER
 
-#endif  // SLAM_VIEWER_MAP_H
+#endif  // SLAM_VIEWER_GROUNDDETECTOR_H

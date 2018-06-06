@@ -23,6 +23,7 @@
 #include <thread>
 #include "Config.h"
 #include "Map.h"
+#include "GroundDetector.h"
 #include "ui/Viewer.h"
 #include "ui/MapDrawer.h"
 
@@ -44,8 +45,11 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    // Detect Ground
+    SLAM_VIEWER::GroundDetector gdetector(&map);
+
     // Create user interface
-    SLAM_VIEWER::MapDrawer * mdrawer = new SLAM_VIEWER::MapDrawer(&map);
+    SLAM_VIEWER::MapDrawer * mdrawer = new SLAM_VIEWER::MapDrawer(&map, &gdetector);
 
     SLAM_VIEWER::Viewer* viewer = nullptr;
     std::thread* tviewer = nullptr;

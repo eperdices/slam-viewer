@@ -30,7 +30,7 @@ Map::Map() {
 }
 
 KeyFrame* Map::GetKeyFrame(int id) {
-    unique_lock<mutex> lock(mmutexMap_);
+    unique_lock<mutex> lock(mutexMap_);
     for (auto it=keyFrames_.begin(); it!=keyFrames_.end(); it++) {
         if ((*it)->GetId() == id)
             return *it;
@@ -40,37 +40,37 @@ KeyFrame* Map::GetKeyFrame(int id) {
 }
 
 void Map::AddKeyFrame(KeyFrame *kf) {
-    unique_lock<mutex> lock(mmutexMap_);
+    unique_lock<mutex> lock(mutexMap_);
     keyFrames_.insert(kf);
 }
 
 void Map::AddMapPoint(MapPoint *mp) {
-    unique_lock<mutex> lock(mmutexMap_);
+    unique_lock<mutex> lock(mutexMap_);
     mapPoints_.insert(mp);
 }
 
 void Map::EraseMapPoint(MapPoint *mp) {
-    unique_lock<mutex> lock(mmutexMap_);
+    unique_lock<mutex> lock(mutexMap_);
     mapPoints_.erase(mp);
 }
 
 void Map::EraseKeyFrame(KeyFrame *kf) {
-    unique_lock<mutex> lock(mmutexMap_);
+    unique_lock<mutex> lock(mutexMap_);
     keyFrames_.erase(kf);
 }
 
 vector<KeyFrame*> Map::GetAllKeyFrames() {
-    unique_lock<mutex> lock(mmutexMap_);
+    unique_lock<mutex> lock(mutexMap_);
     return vector<KeyFrame*>(keyFrames_.begin(), keyFrames_.end());
 }
 
 vector<MapPoint*> Map::GetAllMapPoints() {
-    unique_lock<mutex> lock(mmutexMap_);
+    unique_lock<mutex> lock(mutexMap_);
     return vector<MapPoint*>(mapPoints_.begin(), mapPoints_.end());
 }
 
 void Map::clear() {
-    unique_lock<mutex> lock(mmutexMap_);
+    unique_lock<mutex> lock(mutexMap_);
     for (auto it = mapPoints_.begin(), it_end = mapPoints_.end(); it != it_end; it++)
         delete *it;
 
@@ -82,7 +82,7 @@ void Map::clear() {
 }
 
 void Map::UpdateConnections() {
-    unique_lock<mutex> lock(mmutexMap_);
+    unique_lock<mutex> lock(mutexMap_);
 
     for (auto it = keyFrames_.begin(), it_end = keyFrames_.end(); it != it_end; it++)
         (*it)->UpdateConnections();

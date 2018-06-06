@@ -45,10 +45,14 @@ LIST(APPEND SOURCEFILES
     src/Map.cc
     src/MapPoint.cc
     src/KeyFrame.cc
-  
+    src/GroundDetector.cc
+
     # UI
     src/ui/MapDrawer.cc
     src/ui/Viewer.cc
+
+    # Extra
+    src/extra/utils.cc
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCEFILES})

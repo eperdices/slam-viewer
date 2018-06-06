@@ -17,34 +17,21 @@
  *
  */
 
-#ifndef SLAM_VIEWER_MAPDRAWER_H
-#define SLAM_VIEWER_MAPDRAWER_H
+#ifndef SLAM_VIEWER_UTILS_H_
+#define SLAM_VIEWER_UTILS_H_
 
-#include <mutex>
-#include <pangolin/pangolin.h>
-#include <Eigen/Dense>
+#include <cstdlib>
 #include <opencv2/core/core.hpp>
-#include "Map.h"
-#include "GroundDetector.h"
 
 namespace SLAM_VIEWER {
 
-class MapDrawer {
- public:
-    MapDrawer(Map * map, GroundDetector * gdetector);
+// Get a random int in range [min..max]
+int Random(int min, int max);
 
-    void DrawMapPoints();
-    void DrawKeyFrames(const bool bDrawKF, const bool bDrawGraph);
-    void DrawPlane();
-
- private:
-    Map * map_;
-    GroundDetector * gdetector_;
-
- public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-};
+// Exponential SO3
+cv::Mat ExpSO3(const float &x, const float &y, const float &z);
+cv::Mat ExpSO3(const cv::Mat &v);
 
 }  // namespace SLAM_VIEWER
 
-#endif  // SLAM_VIEWER_MAPDRAWER_H
+#endif  // SLAM_VIEWER_UTILS_H_

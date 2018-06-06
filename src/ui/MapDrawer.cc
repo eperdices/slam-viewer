@@ -24,8 +24,9 @@ using std::vector;
 
 namespace SLAM_VIEWER {
 
-MapDrawer::MapDrawer(Map *map) {
+MapDrawer::MapDrawer(Map * map, GroundDetector * gdetector) {
     map_ = map;
+    gdetector_ = gdetector;
 }
 
 void MapDrawer::DrawMapPoints() {
@@ -118,6 +119,63 @@ void MapDrawer::DrawKeyFrames(const bool bDrawKF, const bool bDrawGraph) {
 
         glEnd();
     }
+}
+
+void MapDrawer::DrawPlane() {
+    cv::Mat p = gdetector_->GetPlane();
+
+    pangolin::OpenGlMatrix glT;
+    glT.m[0] = p.at<float>(0,0);
+    glT.m[1] = p.at<float>(1,0);
+    glT.m[2] = p.at<float>(2,0);
+    glT.m[3] = 0.0;
+
+    glT.m[4] = p.at<float>(0,1);
+    glT.m[5] = p.at<float>(1,1);
+    glT.m[6] = p.at<float>(2,1);
+    glT.m[7] = 0.0;
+
+    glT.m[8] = p.at<float>(0,2);
+    glT.m[9] = p.at<float>(1,2);
+    glT.m[10] = p.at<float>(2,2);
+    glT.m[11] = 0.0;
+
+    glT.m[12] = p.at<float>(0,3);
+    glT.m[13] = p.at<float>(1,3);
+    glT.m[14] = p.at<float>(2,3);
+    glT.m[15] = 1.0;
+
+    glPushMatrix();
+    glT.Multiply();
+
+    // Plane parallel to x-z at origin with normal -y
+    const int ndivs = 5;
+    const float ndivsize = 0.3;
+    const float minx = -ndivs*ndivsize;
+    const float minz = -ndivs*ndivsize;
+    const float maxx = ndivs*ndivsize;
+    const float maxz = ndivs*ndivsize;
+
+    glLineWidth(2);
+    glColor3f(0.7f,0.7f,1.0f);
+    glBegin(GL_LINES);
+
+    for(int n = 0; n<=2*ndivs; n++) {
+        glVertex3f(minx+ndivsize*n,0,minz);
+        glVertex3f(minx+ndivsize*n,0,maxz);
+        glVertex3f(minx,0,minz+ndivsize*n);
+        glVertex3f(maxx,0,minz+ndivsize*n);
+    }
+
+    glEnd();
+
+    // Draw cuble
+    const float size = 0.1;
+    pangolin::OpenGlMatrix M = pangolin::OpenGlMatrix::Translate(0.0, -size, 0.0);
+    M.Multiply();
+    pangolin::glDrawColouredCube(-size,size);
+
+    glPopMatrix();
 }
 
 }  // namespace SLAM_VIEWER

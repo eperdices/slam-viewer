@@ -17,34 +17,34 @@
  *
  */
 
-#ifndef SLAM_VIEWER_MAPDRAWER_H
-#define SLAM_VIEWER_MAPDRAWER_H
-
-#include <mutex>
-#include <pangolin/pangolin.h>
-#include <Eigen/Dense>
-#include <opencv2/core/core.hpp>
-#include "Map.h"
-#include "GroundDetector.h"
+#include "utils.h"
 
 namespace SLAM_VIEWER {
 
-class MapDrawer {
- public:
-    MapDrawer(Map * map, GroundDetector * gdetector);
+int Random(int min, int max) {
+  int d = max - min + 1;
+  return static_cast<int>(((static_cast<double>(rand())/(static_cast<double>(RAND_MAX) + 1.0)) * d) + min);
+}
 
-    void DrawMapPoints();
-    void DrawKeyFrames(const bool bDrawKF, const bool bDrawGraph);
-    void DrawPlane();
+cv::Mat ExpSO3(const float &x, const float &y, const float &z) {
+    cv::Mat I = cv::Mat::eye(3,3,CV_32F);
+    const float d2 = x*x+y*y+z*z;
+    const float d = sqrt(d2);
+    cv::Mat W = (cv::Mat_<float>(3,3) << 0, -z, y,
+                                         z, 0, -x,
+                                         -y,    x, 0);
+    if(d<1e-4)
+        return (I + W + 0.5f*W*W);
+    else
+        return (I + W*sin(d)/d + W*W*(1.0f-cos(d))/d2);
+}
 
- private:
-    Map * map_;
-    GroundDetector * gdetector_;
+cv::Mat ExpSO3(const cv::Mat &v) {
+    return ExpSO3(v.at<float>(0),v.at<float>(1),v.at<float>(2));
+}
 
- public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-};
+void DO() {
+    
+}
 
 }  // namespace SLAM_VIEWER
-
-#endif  // SLAM_VIEWER_MAPDRAWER_H
